@@ -2,67 +2,56 @@ package com.api.application.service.impl;
 
 import com.api.application.domain.model.User;
 import com.api.application.domain.repositoy.UserRepository;
-import com.api.application.service.UserService;
-import com.api.application.service.exception.BusinessException;
-import com.api.application.service.exception.NotFoundException;
+import com.api.application.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
-import static java.util.Optional.ofNullable;
+import java.util.Optional;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements CrudService<User, Long> {
 
     @Autowired
     private UserRepository userRepository;
 
-    @Transactional(readOnly = true)
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Override
     public List<User> findAll() {
-        return this.userRepository.findAll();
+        return userRepository.findAll();
     }
 
-    @Transactional(readOnly = true)
+    @Override
     public User findById(Long id) {
-        return this.userRepository.findById(id).orElseThrow(NotFoundException::new);
+        return userRepository.findById(id).orElse(null);
     }
 
-    @Transactional
-    public User create(User userToCreate) {
-        ofNullable(userToCreate).orElseThrow(() -> new BusinessException("User to create must not be null."));
-        ofNullable(userToCreate.getAccount()).orElseThrow(() -> new BusinessException("User account must not be null."));
-        ofNullable(userToCreate.getCard()).orElseThrow(() -> new BusinessException("User card must not be null."));
-
-        if (userRepository.existsByAccountNumber(userToCreate.getAccount().getNumber())) {
-            throw new BusinessException("This account number already exists.");
-        }
-        if (userRepository.existsByCardNumber(userToCreate.getCard().getNumber())) {
-            throw new BusinessException("This card number already exists.");
-        }
-        return this.userRepository.save(userToCreate);
+    @Override
+    public User create(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
     }
 
-    @Transactional
-    public User update(Long id, User userToUpdate) {
-        User dbUser = this.findById(id);
-        if (!dbUser.getId().equals(userToUpdate.getId())) {
-            throw new BusinessException("Update IDs must be the same.");
+    @Override
+    public User update(Long id, User user) {
+        User existingUser = findById(id);
+        if (existingUser != null) {
+            existingUser.setUsername(user.getUsername());
+            existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+            return userRepository.save(existingUser);
         }
-
-        dbUser.setName(userToUpdate.getName());
-        dbUser.setAccount(userToUpdate.getAccount());
-        dbUser.setCard(userToUpdate.getCard());
-        dbUser.setFeatures(userToUpdate.getFeatures());
-
-        return this.userRepository.save(dbUser);
+        return null;
     }
 
-    @Transactional
+    @Override
     public void delete(Long id) {
-        User dbUser = this.findById(id);
-        this.userRepository.delete(dbUser);
+        userRepository.deleteById(id);
     }
 
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
 }

@@ -2,7 +2,7 @@ package com.api.application.service;
 
 import java.util.List;
 
-public interface CrudService<ID, T> {
+public interface CrudService<T, ID> {
     List<T> findAll();
     T findById(ID id);
     T create(T entity);

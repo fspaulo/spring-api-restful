@@ -1,58 +1,27 @@
 package com.api.application.domain.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
-import java.util.List;
-
-@Data
-@Getter
-@Setter
-@Entity(name="tb_user")
+@Entity
+@Table(name = "users")
 public class User extends BaseModel {
 
-    private String name;
+    private String username;
+    private String password;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private Account account;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    private Card card;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Feature> features;
-
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public Account getAccount() {
-        return account;
+    public String getPassword() {
+        return password;
     }
 
-    public void setAccount(Account account) {
-        this.account = account;
-    }
-
-    public Card getCard() {
-        return card;
-    }
-
-    public void setCard(Card card) {
-        this.card = card;
-    }
-
-    public List<Feature> getFeatures() {
-        return features;
-    }
-
-    public void setFeatures(List<Feature> features) {
-        this.features = features;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

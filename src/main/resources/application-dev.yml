@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:appBank
+    url: jdbc:h2:mem:testDB
     username: admin
     password:
   jpa:
