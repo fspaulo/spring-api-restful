@@ -12,7 +12,7 @@ import java.util.function.Function;
 
 @Component
 public class JwtUtil {
-    // TODO Fix
+
     @Value("${jwt.secret}")
     private String secret;
 
