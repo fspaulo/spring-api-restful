@@ -1,0 +1,32 @@
+name: Build Spring Boot App
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Fazer o checkout do repositório
+      - name: Checkout do Repositório
+        uses: actions/checkout@v3
+
+      # 2. Configurar o JDK 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'  # Você pode alterar para outra distribuição, se preferir
+          java-version: '17'
+          cache: gradle  # Essa opção ajuda a armazenar o cache das dependências do Gradle
+
+      # 3. Garantir permissões de execução para o wrapper do Gradle
+      - name: Permissão para gradlew
+        run: chmod +x gradlew
+
+      # 4. Executar o build (que normalmente roda os testes também)
+      - name: Build com Gradle
+        run: ./gradlew build
